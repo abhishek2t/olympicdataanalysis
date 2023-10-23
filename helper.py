@@ -43,9 +43,11 @@ def country_year_list(df):
 
 def data_over_time(df,col):
 
-    nations_over_time = df.drop_duplicates(['Year', col])['Year'].value_counts().reset_index().sort_values('index')
-    nations_over_time.rename(columns={'index': 'Edition', 'Year': col}, inplace=True)
-    return nations_over_time
+    nations_over_time = df.drop_duplicates(['Year', col])['Year'].value_counts().reset_index()
+
+    final=nations_over_time.sort_values('Year')
+    final.rename(columns={'Year': 'Edition', 'count': col}, inplace=True)
+    return final
 
 
 def most_successful(df, sport):
@@ -54,9 +56,9 @@ def most_successful(df, sport):
     if sport != 'Overall':
         temp_df = temp_df[temp_df['Sport'] == sport]
 
-    x = temp_df['Name'].value_counts().reset_index().head(15).merge(df, left_on='index', right_on='Name', how='left')[
-        ['index', 'Name_x', 'Sport', 'region']].drop_duplicates('index')
-    x.rename(columns={'index': 'Name', 'Name_x': 'Medals'}, inplace=True)
+    x = temp_df['Name'].value_counts().reset_index().head(15).merge(df, left_on='Name', right_on='Name', how='left')[
+        ['Name', 'count', 'Sport', 'region']].drop_duplicates('Name')
+    x.rename(columns={'count': 'Medals'}, inplace=True)
     return x
 
 def yearwise_medal_tally(df,country):
@@ -82,11 +84,15 @@ def most_successful_countrywise(df, country):
     temp_df = df.dropna(subset=['Medal'])
 
     temp_df = temp_df[temp_df['region'] == country]
+    print('temp_df')
+    print(temp_df.columns)
 
-    x = temp_df['Name'].value_counts().reset_index().head(10).merge(df, left_on='index', right_on='Name', how='left')[
-        ['index', 'Name_x', 'Sport']].drop_duplicates('index')
-    x.rename(columns={'index': 'Name', 'Name_x': 'Medals'}, inplace=True)
-    return x
+    x = temp_df['Name'].value_counts().reset_index().head(10)
+
+    y=x.merge(df, left_on='Name', right_on='Name', how='left')
+    z=y[['Name', 'count', 'Sport']].drop_duplicates('Name')
+    z.rename(columns={'count': 'Medals'}, inplace=True)
+    return z
 
 def weight_v_height(df,sport):
     athlete_df = df.drop_duplicates(subset=['Name', 'region'])
