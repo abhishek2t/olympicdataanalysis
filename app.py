@@ -46,7 +46,7 @@ if user_menu == 'Overall Analysis':
     nations = df['region'].unique().shape[0]
 
     st.title("Top Statistics")
-    col1,col2,col3 = st.beta_columns(3)
+    col1,col2,col3 = st.columns(3)
     with col1:
         st.header("Editions")
         st.title(editions)
@@ -57,7 +57,7 @@ if user_menu == 'Overall Analysis':
         st.header("Sports")
         st.title(sports)
 
-    col1, col2, col3 = st.beta_columns(3)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.header("Events")
         st.title(events)
@@ -69,6 +69,7 @@ if user_menu == 'Overall Analysis':
         st.title(athletes)
 
     nations_over_time = helper.data_over_time(df,'region')
+
     fig = px.line(nations_over_time, x="Edition", y="region")
     st.title("Participating Nations over the years")
     st.plotly_chart(fig)
@@ -84,10 +85,10 @@ if user_menu == 'Overall Analysis':
     st.plotly_chart(fig)
 
     st.title("No. of Events over time(Every Sport)")
-    fig,ax = plt.subplots(figsize=(20,20))
+    fig, ax = plt.subplots(figsize=(20, 20))
     x = df.drop_duplicates(['Year', 'Sport', 'Event'])
-    ax = sns.heatmap(x.pivot_table(index='Sport', columns='Year', values='Event', aggfunc='count').fillna(0).astype('int'),
-                annot=True)
+    heatmap_data = x.pivot_table(index='Sport', columns='Year', values='Event', aggfunc='count').fillna(0).astype('int')
+    sns.heatmap(heatmap_data, annot=True, ax=ax)
     st.pyplot(fig)
 
     st.title("Most successful Athletes")
@@ -116,7 +117,7 @@ if user_menu == 'Country-wise Analysis':
     st.title(selected_country + " excels in the following sports")
     pt = helper.country_event_heatmap(df,selected_country)
     fig, ax = plt.subplots(figsize=(20, 20))
-    ax = sns.heatmap(pt,annot=True)
+    sns.heatmap(pt, annot=True, ax=ax)
     st.pyplot(fig)
 
     st.title("Top 10 athletes of " + selected_country)
@@ -164,8 +165,8 @@ if user_menu == 'Athlete wise Analysis':
     st.title('Height Vs Weight')
     selected_sport = st.selectbox('Select a Sport', sport_list)
     temp_df = helper.weight_v_height(df,selected_sport)
-    fig,ax = plt.subplots()
-    ax = sns.scatterplot(temp_df['Weight'],temp_df['Height'],hue=temp_df['Medal'],style=temp_df['Sex'],s=60)
+    fig, ax = plt.subplots()
+    sns.scatterplot(x=temp_df['Weight'], y=temp_df['Height'], hue=temp_df['Medal'], style=temp_df['Sex'], s=60, ax=ax)
     st.pyplot(fig)
 
     st.title("Men Vs Women Participation Over the Years")
